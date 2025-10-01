@@ -117,6 +117,7 @@ function App() {
         position="top-right"
         ref={daylightExpandRef}
         tooltip="Sun & Shadows"
+        label="Sun & Shadows"
       >
         <arcgis-daylight
           slot="content"
@@ -130,6 +131,7 @@ function App() {
           position="bottom-left"
           ref={elevationExpandRef}
           tooltip="Elevation Profile"
+          label="Elevation Profile"
         >
           <arcgis-elevation-profile
             slot="content"
