@@ -1,0 +1,1 @@
+import{r as i,d as t,dz as h,ao as d,bW as l}from"./index-BdmtnMtL.js";const f=s=>{let e=class extends s{initialize(){this.addHandles(h((()=>this.layer),"refresh",(r=>{this.doRefresh(r.dataChanged).catch((a=>{d(a)||l.getLogger(this).error(a)}))})),"RefreshableLayerView")}};return e=i([t("esri.views.layers.RefreshableLayerView")],e),e};export{f as i};

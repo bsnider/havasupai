@@ -1,0 +1,1 @@
+import{hs as e,ht as f}from"./index-BdmtnMtL.js";function n(u,t){return t.push(u.buffer),{buffer:u.buffer,layout:new e(u.layout)}}function o(u){return new f(u.layout).createView(u.buffer)}export{o as t,n as u};
