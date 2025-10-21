@@ -18,13 +18,13 @@ export const FEATURE_LABELS: [string, number, number, string][] = [
 
 export const TARGET_CAMERA = {
   position: {
-    x: -12547602.814944215,
-    y: 4326032.210445238,
-    z: 9085.984944506548,
+    x: -12543414.69795861,
+    y: 4331011.89300031,
+    z: 2702.3458520863205,
     spatialReference: { wkid: 102100, latestWkid: 3857 },
   },
-  heading: 6.9774518485941055,
-  tilt: 43.35454513859172,
+  heading: 329.0423790627999,
+  tilt: 75.48650912643205,
 };
 
 export const IS_MOBILE =
