@@ -1,1 +1,0 @@
-import{r as t,m as e,d as o}from"./index-CxDa6KP7.js";import{h as s}from"./GroupLayerView-zuOX5kMN.js";import"./LayerView-BMCVh46y.js";let r=class extends s{constructor(){super(...arguments),this.type="group"}};t([e()],r.prototype,"view",void 0),r=t([o("esri.views.3d.layers.GroupLayerView3D")],r);const m=r;export{m as default};
