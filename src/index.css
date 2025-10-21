@@ -21,3 +21,17 @@ arcgis-map {
   min-height: 100vh;
   min-width: 100vw;
 }
+
+/* Suppress mobile expand scrim/mask */
+@media (max-width: 640px) {
+  .esri-expand__mask {
+    display: none !important;
+  }
+}
+
+/* If using Shadow DOM parts (future-safe) */
+@media (max-width: 640px) {
+  arcgis-expand::part(mask) {
+    display: none !important;
+  }
+}

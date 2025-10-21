@@ -1,5 +1,5 @@
 // Map-related constants and shared configuration
-export const LIGHTING_DATE = new Date("2025-10-16T14:00:00Z");
+export const LIGHTING_DATE = new Date("2025-10-16T20:00:00Z");
 
 // Desktop baseline label list
 export const FEATURE_LABELS: [string, number, number, string][] = [
@@ -13,6 +13,7 @@ export const FEATURE_LABELS: [string, number, number, string][] = [
   ["Fern Spring", -112.70256432267234, 36.25693086823788, "#0080ff"],
   ["The Confluence", -112.76325240470602, 36.30807852398987, "#0080ff"],
   ["The Incident", -114.59626386071403, 34.76927578428712, "#633200"],
+  ["Hilltop Trailhead", -112.70912958381884, 36.15996733293846, "#00c853"],
 ];
 
 export const TARGET_CAMERA = {

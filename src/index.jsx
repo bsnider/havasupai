@@ -11,6 +11,7 @@ import "@arcgis/map-components/components/arcgis-elevation-profile";
 import "@arcgis/map-components/components/arcgis-navigation-toggle";
 import "@arcgis/map-components/components/arcgis-compass";
 import "@arcgis/map-components/components/arcgis-expand";
+import "@arcgis/map-components/components/arcgis-daylight";
 
 import { useTrailSetup } from "./map/useTrailSetup";
 import { IS_MOBILE } from "./map/constants";
@@ -25,6 +26,8 @@ function App() {
   const [trailFeature, setTrailFeature] = useState(null);
   const [showElevation, setShowElevation] = useState(false);
   const elevationExpandRef = useRef(null);
+  const daylightExpandRef = useRef(null);
+  const daylightRef = useRef(null);
 
   const handleViewReady = useTrailSetup({
     elevationProfileRef,
@@ -73,6 +76,10 @@ function App() {
   }, [showElevation, trailFeature]);
 
   useEffect(() => {
+    // control expand states (desktop expanded, mobile collapsed)
+    if (daylightExpandRef.current) {
+      daylightExpandRef.current.expanded = !IS_MOBILE;
+    }
     if (elevationExpandRef.current) {
       elevationExpandRef.current.expanded = !IS_MOBILE && showElevation;
     }
@@ -97,11 +104,30 @@ function App() {
       onarcgisViewClick={handleViewClick}
       onarcgisViewReadyChange={handleViewReady}
     >
+      {/* widgets */}
       <arcgis-zoom position="top-left"></arcgis-zoom>
       <arcgis-navigation-toggle position="top-left"></arcgis-navigation-toggle>
       <arcgis-compass position="top-left"></arcgis-compass>
       <arcgis-search position="top-right" />
       <arcgis-basemap-toggle position="bottom-right" next-basemap="topo-3d" />
+
+      {/* Daylight (re-added) */}
+      <arcgis-expand
+        position="top-right"
+        ref={daylightExpandRef}
+        tooltip="Sun & Shadows"
+        label="Daylight"
+        mode="floating" // force floating mode (no drawer scrim)
+        autoCollapse={false} // keep state stable
+      >
+        <arcgis-daylight
+          slot="content"
+          ref={daylightRef}
+          playSpeed="1"
+        ></arcgis-daylight>
+      </arcgis-expand>
+
+      {/* Elevation profile (conditional) */}
       {showElevation && (
         <arcgis-expand
           position="bottom-left"
@@ -111,9 +137,10 @@ function App() {
         >
           <arcgis-elevation-profile
             slot="content"
+            mode="floating" // force floating mode (no drawer scrim)
             ref={elevationProfileRef}
             unit="imperial"
-            hideSelectButton={true}
+            hideSelectButton
             highlightEnabled={false}
           />
         </arcgis-expand>

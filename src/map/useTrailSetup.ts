@@ -6,7 +6,7 @@ import {
   LIGHTING_DATE,
   TARGET_CAMERA,
 } from "./constants";
-import { makeTextGraphic, makeEndpointGraphic } from "./graphics";
+import { makeTextGraphic } from "./graphics";
 import { createTrailLayer, createSupaiLayer } from "./layers";
 import { createCampgroundsLayer } from "./layers";
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils";
@@ -38,6 +38,12 @@ export function useTrailSetup(options: {
       const view = event.target;
       if (!view || initializedRef.current) return;
       initializedRef.current = true;
+
+      view.environment.lighting = {
+        type: "sun",
+        date: LIGHTING_DATE,
+        directShadowsEnabled: !IS_MOBILE,
+      } as any;
 
       try {
         if (IS_MOBILE) (view as any).qualityProfile = "low";
@@ -96,18 +102,6 @@ export function useTrailSetup(options: {
         if (features?.length) {
           const geom: any = features[0].geometry;
           if (geom.type === "polyline" && geom.paths?.length) {
-            const firstPath = geom.paths[0];
-            const startCoord = firstPath[0];
-            const startGraphic = makeEndpointGraphic(
-              "Trailhead",
-              "#00c853",
-              startCoord,
-              60
-            );
-
-            view.graphics.addMany([startGraphic]);
-            addedGraphicsRef.current.push(startGraphic);
-
             setTrailFeature(features[0]);
             setShowElevation(true);
           }
