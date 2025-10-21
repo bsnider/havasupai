@@ -1,8 +1,15 @@
 /// <reference types="vite/client" />
 import { useCallback } from "react";
-import { WATER_FEATURE_LABELS, IS_MOBILE, LIGHTING_DATE } from "./constants";
+import {
+  FEATURE_LABELS,
+  IS_MOBILE,
+  LIGHTING_DATE,
+  TARGET_CAMERA,
+} from "./constants";
 import { makeTextGraphic, makeEndpointGraphic } from "./graphics";
 import { createTrailLayer, createSupaiLayer } from "./layers";
+import { createCampgroundsLayer } from "./layers";
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils";
 
 /**
  * Hook that returns a viewReady handler to set up layers, graphics, endpoints, and elevation input.
@@ -32,12 +39,6 @@ export function useTrailSetup(options: {
       if (!view || initializedRef.current) return;
       initializedRef.current = true;
 
-      view.environment.lighting = {
-        type: "sun",
-        date: LIGHTING_DATE,
-        directShadowsEnabled: !IS_MOBILE,
-      } as any;
-
       try {
         if (IS_MOBILE) (view as any).qualityProfile = "low";
       } catch {
@@ -47,15 +48,42 @@ export function useTrailSetup(options: {
       const base = import.meta.env.BASE_URL || "/";
       const trailLayer = createTrailLayer(base + "trail.json");
       const supaiLayer = createSupaiLayer(base + "supai.json");
-      view.map.addMany([trailLayer, supaiLayer]);
+      const campgroundsLayer = createCampgroundsLayer(
+        base + "campgrounds.json"
+      );
+
+      view.map.addMany([trailLayer, supaiLayer, campgroundsLayer]);
+
       trailLayerRef.current = trailLayer;
       supaiLayerRef.current = supaiLayer;
 
-      const waterGraphics = WATER_FEATURE_LABELS.map(([t, lon, lat, c]) =>
+      const waterGraphics = FEATURE_LABELS.map(([t, lon, lat, c]) =>
         makeTextGraphic(t, lon, lat, c)
       );
       view.graphics.addMany(waterGraphics);
       addedGraphicsRef.current.push(...waterGraphics);
+
+      // Load basemap layers
+      try {
+        await Promise.all(
+          view.map.basemap.baseLayers.map((layer: any) =>
+            layer.load().catch(() => {})
+          )
+        );
+      } catch {}
+
+      // Wait until the basemap (initial frame) is fully rendered
+      await reactiveUtils.whenOnce(() => !view.updating);
+
+      // Now safe to add labels
+      const labelGraphics = FEATURE_LABELS.map(([t, lon, lat, c]) =>
+        makeTextGraphic(t, lon, lat, c)
+      );
+      view.graphics.addMany(labelGraphics);
+      addedGraphicsRef.current.push(...labelGraphics);
+
+      // Camera transition only after first render
+      view.goTo(TARGET_CAMERA, { duration: 2000 }).catch(() => {});
 
       try {
         await trailLayer.load();
@@ -69,23 +97,17 @@ export function useTrailSetup(options: {
           const geom: any = features[0].geometry;
           if (geom.type === "polyline" && geom.paths?.length) {
             const firstPath = geom.paths[0];
-            const lastPath = geom.paths[geom.paths.length - 1];
             const startCoord = firstPath[0];
-            const endCoord = lastPath[lastPath.length - 1];
             const startGraphic = makeEndpointGraphic(
               "Trailhead",
               "#00c853",
               startCoord,
               60
             );
-            const endGraphic = makeEndpointGraphic(
-              "Campground",
-              "#ff1744",
-              endCoord,
-              40
-            );
-            view.graphics.addMany([startGraphic, endGraphic]);
-            addedGraphicsRef.current.push(startGraphic, endGraphic);
+
+            view.graphics.addMany([startGraphic]);
+            addedGraphicsRef.current.push(startGraphic);
+
             setTrailFeature(features[0]);
             setShowElevation(true);
           }
